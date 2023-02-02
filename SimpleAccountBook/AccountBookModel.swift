@@ -10,7 +10,7 @@ enum AccountCategory:String, CaseIterable, Codable {
     
     var id:AccountCategory { self }
     
-    var DisplayImoji: String {
+    var ExpenditureDisplayImoji: String {
         
         switch self {
             
@@ -27,7 +27,7 @@ enum AccountCategory:String, CaseIterable, Codable {
         }
     }
     
-    var Display: String {
+    var ExpenditureDisplay: String {
         switch self {
             
         case .saving: return "돈아끼기좋은날"
@@ -39,6 +39,37 @@ enum AccountCategory:String, CaseIterable, Codable {
         case .transport: return "타고이동하기"
             
         default: return "돈쓰기좋은날"
+        }
+    }
+    var IncomeDisplayImoji: String {
+        
+        switch self {
+            
+        case .saving: return "💰"
+            
+        case .drink: return "☕️"
+            
+        case .food: return "🍖"
+            
+        case .transport: return "🚘"
+            
+        default: return "💸"
+            
+        }
+    }
+    
+    var IncomeDisplay: String {
+        switch self {
+            
+        case .saving: return "아싸 용돈이당"
+            
+        case .drink: return "아싸 월급이당"
+            
+        case .food: return "개꿀 불로소득"
+            
+        case .transport: return "이자다"
+            
+        default: return "오다주웠다"
         }
     }
 }
@@ -56,7 +87,3 @@ struct AccountData: Codable {
     }
     init() {}
 }
-//let DummyData: [AccountData] = [
-//    AccountData(category: .food, title: "저녁먹었음", account: "30,000"),
-//    AccountData(category: .saving, title: "2023년 1월 첫 저축", account: "100,000")
-//]

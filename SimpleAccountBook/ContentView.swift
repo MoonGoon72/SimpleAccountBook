@@ -1,4 +1,7 @@
 import SwiftUI
+// 아무 입력 없으면 버튼 눌러도 동작 안하게
+// 입금과 지출 분리해서 저장하기
+// 아이콘 고정이되어있는데 수정하기
 
 struct ContentView: View {
     var body: some View {
@@ -42,7 +45,7 @@ struct MainScrollView: View {
             .frame(maxWidth: .infinity)
             .padding()
         }
-        .frame(width: .infinity)
+//        .frame(width: .infinity)
         .background(.white)
         .cornerRadius(20)
         .padding()
@@ -52,24 +55,48 @@ struct MainScrollView: View {
 
 struct TopArea: View {
     @State private var isShowModal = false
+    @State private var isShowModalV2 = false
     
     var body: some View {
         HStack {
-            Button {
-                isShowModal = true
-            } label: {
-                Text("💸💸💸")
-                    .font(.system(size: 33.3))
-                    .frame(maxWidth: .infinity)
+            HStack {
+                Button {
+                    isShowModal = true
+                } label: {
+                    Text("입금")
+                        .font(.system(size: 30.3))
+                        .foregroundColor(.white)
+                        .cornerRadius(4)
+                        
+                }
+                .padding()
+                .sheet(isPresented: self.$isShowModal) {
+                    InputIncomeAccountModal(isPresented: self.$isShowModal)
+                }
             }
+            .background(.green)
+            .cornerRadius(20)
             .padding()
-            .sheet(isPresented: self.$isShowModal) {
-                InputAccountModal(isPresented: self.$isShowModal)
+            
+            HStack {
+                Button {
+                    isShowModalV2 = true
+                } label: {
+                    Text("지출")
+                        .font(.system(size: 30.3))
+                        .foregroundColor(.white)
+                        .cornerRadius(4)
+                        
+                }
+                .padding()
+                .sheet(isPresented: self.$isShowModalV2) {
+                    InputExpenditureAccountModal(isPresented: self.$isShowModalV2)
+                }
             }
+            .background(Color("ExpenditureColor"))
+            .cornerRadius(20)
+            .padding()
         }
-        .background(.white)
-        .cornerRadius(20)
-        .padding()
     }
 }
 struct BottomArea: View {
@@ -106,7 +133,7 @@ struct AccountRow: View {
     var body: some View {
         HStack {
             // 로고 자리
-            Text("💸")
+            Text(accountData.category.ExpenditureDisplayImoji)
                 .font(.system(size: 45))
                 .cornerRadius(0.3)
             VStack(alignment: .leading) {
@@ -124,7 +151,101 @@ struct AccountRow: View {
     }
 }
 
-struct InputAccountModal: View {
+struct InputIncomeAccountModal: View {
+    var dataManager:AccountDataManager = AccountDataManager.shared
+    @Binding var isPresented: Bool
+
+    @Environment(\.dismiss) private var dismiss
+    
+    @State private var money: String = ""
+    @State private var memo:String = ""
+    
+    @State private var selectedCategory:AccountCategory = .none
+    
+    func addAccountData() -> Bool {
+        let acData = AccountData(category: selectedCategory, title: memo, account: money)
+        let result = dataManager.add(AccountData: acData)
+        return !result
+    }
+    
+    var TopButton: some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                Text("돌아가기")
+            }
+            Spacer()
+        }.padding()
+    }
+    
+    var InputArea: some View {
+        VStack {
+            HStack {
+                Text("얼마나 버셨나요?")
+                    .font(.title)
+                Spacer()
+                Button(action: {
+                    let result = addAccountData()
+                    isPresented = result
+                }) {
+                    Image(systemName: "arrow.up")
+                        .imageScale(.large)
+                        .frame(width: 40, height: 40)
+                        .foregroundColor(.white)
+                        .background(.gray)
+                        .clipShape(Circle())
+                }
+
+            }
+            
+            TextField("금액 입력", text: $money)
+                .keyboardType(.decimalPad)
+                .font(.title)
+            
+            Text("")
+            
+            TextField("메모 입력", text: $memo)
+                .font(.title)
+            
+            Text("")
+            
+            Picker("소득 종류를 골라주세요",
+                   selection: $selectedCategory) {
+                ForEach(AccountCategory.allCases, id: \.self) { category in
+                    Text(category.ExpenditureDisplayImoji).tag(category)
+                }
+            }
+            .pickerStyle(SegmentedPickerStyle())
+            Text("")
+            HStack{
+                Text("오늘은~")
+                Spacer()
+            }
+            Text(selectedCategory.ExpenditureDisplay)
+                .font(.title)
+            Spacer()
+        }.padding()
+    }
+    
+    var body: some View {
+        
+        VStack(alignment: .leading) {
+            TopButton
+            InputArea
+            Spacer()
+//            Button {
+////                isPresented = false
+////                dismiss.callAsFunction()
+//                dismiss()
+//            } label: {
+//                Text("Dismiss")
+//            }
+        }.padding()
+    }
+}
+
+struct InputExpenditureAccountModal: View {
     var dataManager:AccountDataManager = AccountDataManager.shared
     @Binding var isPresented: Bool
 
@@ -186,7 +307,7 @@ struct InputAccountModal: View {
             Picker("지출 종류를 골라주세요",
                    selection: $selectedCategory) {
                 ForEach(AccountCategory.allCases, id: \.self) { category in
-                    Text(category.DisplayImoji).tag(category)
+                    Text(category.ExpenditureDisplayImoji).tag(category)
                 }
             }
             .pickerStyle(SegmentedPickerStyle())
@@ -195,7 +316,7 @@ struct InputAccountModal: View {
                 Text("오늘은~")
                 Spacer()
             }
-            Text(selectedCategory.Display)
+            Text(selectedCategory.ExpenditureDisplay)
                 .font(.title)
             Spacer()
         }.padding()
@@ -226,7 +347,7 @@ struct CategorySelectionArea: View {
         VStack {
             Picker("지출 종류를 골라주세요", selection: $selectionCategory) {
                 ForEach(AccountCategory.allCases, id: \.self) { category in
-                    Text(category.DisplayImoji).tag(category)
+                    Text(category.ExpenditureDisplayImoji).tag(category)
                 }
             }.onChange(of: selectionCategory) { newValue in
                 
