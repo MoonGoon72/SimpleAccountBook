@@ -59,39 +59,37 @@ struct TopArea: View {
     
     var body: some View {
         HStack {
-            HStack {
-                Button {
-                    isShowModal = true
-                } label: {
-                    Text("입금")
-                        .font(.system(size: 30.3))
-                        .foregroundColor(.white)
-                        .cornerRadius(4)
-                        
-                }
-                .padding()
-                .sheet(isPresented: self.$isShowModal) {
-                    InputIncomeAccountModal(isPresented: self.$isShowModal)
-                }
+            Button {
+                isShowModal = true
+            } label: {
+                Text("입금")
+                    .font(.system(size: 30.3))
+                    .frame(width: 130)
+                    .foregroundColor(.white)
+                    .cornerRadius(4)
+            }
+            .padding()
+            
+            .sheet(isPresented: self.$isShowModal) {
+                InputIncomeAccountModal(isPresented: self.$isShowModal)
             }
             .background(.green)
             .cornerRadius(20)
             .padding()
             
-            HStack {
-                Button {
-                    isShowModalV2 = true
-                } label: {
-                    Text("지출")
-                        .font(.system(size: 30.3))
-                        .foregroundColor(.white)
-                        .cornerRadius(4)
-                        
-                }
-                .padding()
-                .sheet(isPresented: self.$isShowModalV2) {
-                    InputExpenditureAccountModal(isPresented: self.$isShowModalV2)
-                }
+            
+            Button {
+                isShowModalV2 = true
+            } label: {
+                Text("지출")
+                    .font(.system(size: 30.3))
+                    .frame(width: 130)
+                    .foregroundColor(.white)
+                    .cornerRadius(4)
+            }
+            .padding()
+            .sheet(isPresented: self.$isShowModalV2) {
+                InputExpenditureAccountModal(isPresented: self.$isShowModalV2)
             }
             .background(Color("ExpenditureColor"))
             .cornerRadius(20)
@@ -234,13 +232,6 @@ struct InputIncomeAccountModal: View {
             TopButton
             InputArea
             Spacer()
-//            Button {
-////                isPresented = false
-////                dismiss.callAsFunction()
-//                dismiss()
-//            } label: {
-//                Text("Dismiss")
-//            }
         }.padding()
     }
 }
@@ -257,7 +248,7 @@ struct InputExpenditureAccountModal: View {
     @State private var selectedCategory:AccountCategory = .none
     
     func addAccountData() -> Bool {
-        let acData = AccountData(category: .none, title: memo, account: money)
+        let acData = AccountData(category: selectedCategory, title: memo, account: money)
         let result = dataManager.add(AccountData: acData)
         return !result
     }
@@ -328,13 +319,6 @@ struct InputExpenditureAccountModal: View {
             TopButton
             InputArea
             Spacer()
-//            Button {
-////                isPresented = false
-////                dismiss.callAsFunction()
-//                dismiss()
-//            } label: {
-//                Text("Dismiss")
-//            }
         }.padding()
     }
 }
@@ -350,7 +334,7 @@ struct CategorySelectionArea: View {
                     Text(category.ExpenditureDisplayImoji).tag(category)
                 }
             }.onChange(of: selectionCategory) { newValue in
-                
+                print("What's new Value \(newValue)")
             }
             .pickerStyle(SegmentedPickerStyle())
             .padding()

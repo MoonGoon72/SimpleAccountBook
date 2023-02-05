@@ -8,6 +8,9 @@ class AccountDataManager:ObservableObject {
     @Published var acDataList:[AccountData] = []
     
     init() {
+//        for key in UserDefaults.standard.dictionaryRepresentation().keys {
+//                    UserDefaults.standard.removeObject(forKey: key.description)
+//                }
         if let data = UserDefaults.standard.value(forKey: AccountDataManager.ACCOUNT_DATA_LIST_KEY) as? Data {
             let accountList = try? PropertyListDecoder().decode([AccountData].self, from: data)
             if let list = accountList {

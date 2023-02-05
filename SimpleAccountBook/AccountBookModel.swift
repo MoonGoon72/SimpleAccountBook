@@ -41,6 +41,7 @@ enum AccountCategory:String, CaseIterable, Codable {
         default: return "돈쓰기좋은날"
         }
     }
+    
     var IncomeDisplayImoji: String {
         
         switch self {
