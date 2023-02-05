@@ -69,7 +69,6 @@ struct TopArea: View {
                     .cornerRadius(4)
             }
             .padding()
-            
             .sheet(isPresented: self.$isShowModal) {
                 InputIncomeAccountModal(isPresented: self.$isShowModal)
             }
@@ -110,13 +109,14 @@ struct BottomArea: View {
 }
 
 struct AccountRow: View {
-    
+    @State private var isShowUpdateModal: Bool = false
     var accountData:AccountData
     
     var buttonArea: some View {
         VStack {
             Button {
-                
+                print(accountData)
+                isShowUpdateModal = true
             } label: {
                 Text("+")
                     .foregroundColor(.black)
@@ -124,6 +124,9 @@ struct AccountRow: View {
             .frame(width: 43, height: 33)
             .background(Color("AccountAdd"))
             .cornerRadius(10)
+            .sheet(isPresented: self.$isShowUpdateModal) {
+                UpdateAccountModal(isPresented: self.$isShowUpdateModal, prevData: accountData)
+            }
         }
         .padding()
     }
@@ -243,7 +246,7 @@ struct InputExpenditureAccountModal: View {
     @Environment(\.dismiss) private var dismiss
     
     @State private var money: String = ""
-    @State private var memo:String = ""
+    @State private var memo: String = ""
     
     @State private var selectedCategory:AccountCategory = .none
     
@@ -320,6 +323,124 @@ struct InputExpenditureAccountModal: View {
             InputArea
             Spacer()
         }.padding()
+    }
+}
+
+struct UpdateAccountModal: View {
+    var dataManager:AccountDataManager = AccountDataManager.shared
+    @Binding var isPresented: Bool
+    var prevData:AccountData
+
+    @Environment(\.dismiss) private var dismiss
+    
+    @State private var money: String = ""
+    @State private var memo:String = ""
+    
+    @State private var selectedCategory:AccountCategory = .none
+    
+    func findAccountIndex() -> Int? {
+        for i in 0..<AccountDataManager.shared.acDataList.count {
+            if AccountDataManager.shared.acDataList[i].title == prevData.title {
+                return i
+            }
+        }
+        return nil
+    }
+    
+    func updateAccountData() -> Bool {
+        let acData = AccountData(category: selectedCategory, title: memo, account: money)
+        let result = dataManager.updateData(updatedAccountData: acData, at: findAccountIndex()!)
+        return !result
+    }
+    
+    var TopButton: some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                Text("돌아가기")
+            }
+            Spacer()
+        }.padding()
+    }
+    
+    var InputArea: some View {
+        VStack {
+            HStack {
+                Text("어떻게 바꾸실 건가요?")
+                    .font(.title)
+                Spacer()
+                Button(action: {
+                    let result = updateAccountData()
+                    isPresented = result
+                }) {
+                    Image(systemName: "arrow.up")
+                        .imageScale(.large)
+                        .frame(width: 40, height: 40)
+                        .foregroundColor(.white)
+                        .background(.gray)
+                        .clipShape(Circle())
+                }
+
+            }
+            
+            TextField("금액 입력", text: $money)
+                .keyboardType(.decimalPad)
+                .font(.title)
+            
+            Text("")
+            
+            TextField("메모 입력", text: $memo)
+                .font(.title)
+            
+            Text("")
+            
+            Picker("소득 종류를 골라주세요",
+                   selection: $selectedCategory) {
+                ForEach(AccountCategory.allCases, id: \.self) { category in
+                    Text(category.ExpenditureDisplayImoji).tag(category)
+                }
+            }
+            .pickerStyle(SegmentedPickerStyle())
+            Text("")
+            HStack{
+                Text("오늘은~")
+                Spacer()
+            }
+            Text(selectedCategory.ExpenditureDisplay)
+                .font(.title)
+            Spacer()
+        }.padding()
+    }
+    
+    var body: some View {
+        
+        VStack(alignment: .leading) {
+            TopButton
+            InputArea
+            Spacer()
+        }.padding()
+    }
+}
+
+
+struct ChangeAccountModal: View {
+    
+    @StateObject var dataManager:AccountDataManager = AccountDataManager.shared
+    @State var acCategory:AccountCategory = .none
+    @Binding var isPresented: Bool
+    @Binding var accountData:AccountData
+    
+    @Environment(\.dismiss) private var dismiss
+    
+    @State private var money: String = ""
+    @State private var memo: String = ""
+    
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            
+        }
     }
 }
 

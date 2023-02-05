@@ -59,5 +59,13 @@ class AccountDataManager:ObservableObject {
         return false
     }
     
+    func updateData(updatedAccountData: AccountData, at index: Int) -> Bool {
+        if index >= 0 && index < acDataList.count {
+            acDataList[index] = updatedAccountData
+            UserDefaults.standard.set(try? PropertyListEncoder().encode(acDataList), forKey: AccountDataManager.ACCOUNT_DATA_LIST_KEY)
+            return UserDefaults.standard.synchronize()
+        }
+        return false
+    }
     
 }

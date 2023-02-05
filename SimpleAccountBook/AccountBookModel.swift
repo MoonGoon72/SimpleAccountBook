@@ -30,15 +30,15 @@ enum AccountCategory:String, CaseIterable, Codable {
     var ExpenditureDisplay: String {
         switch self {
             
-        case .saving: return "돈아끼기좋은날"
+        case .saving: return "저축하기 좋은날"
             
         case .drink: return "커피/음료수 좋은날"
             
-        case .food: return "먹기좋은날"
+        case .food: return "먹기 좋은날"
             
-        case .transport: return "타고이동하기"
+        case .transport: return "타고 이동하기"
             
-        default: return "돈쓰기좋은날"
+        default: return "돈 쓰기 좋은날"
         }
     }
     
